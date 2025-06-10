@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Food Ordering System</title>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="adminAuthScreen" class="auth-screen">
+        <div class="auth-container">
+            <h2>Admin Login</h2>
+            <form id="adminLoginForm" class="auth-form">
+                <input type="email" placeholder="Email" id="adminEmail" required>
+                <input type="password" placeholder="Password" id="adminPassword" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="dashboard" style="display: none;">
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <div class="nav-brand">Admin Dashboard</div>
+            <div class="nav-links">
+                <a href="#" onclick="showAdminSection('users')" class="active">Users</a>
+                <a href="#" onclick="showAdminSection('orders')">Orders</a>
+                <a href="#" onclick="showAdminSection('search')">Search</a>
+                <a href="#" onclick="showAdminSection('foodItems')">Food Items</a>
+                <a href="#" onclick="showAdminSection('addFood')">Add Food</a>
+                <button onclick="adminLogout()" class="logout-btn">Logout</button>
+            </div>
+        </nav>
+
+        <!-- Users Section -->
+        <section id="usersSection" class="section">
+            <h2>Users Management</h2>
+            <div class="users-controls">
+                <input type="text" id="userSearchInput" placeholder="Search users by name or email...">
+                <select id="userStatusFilter">
+                    <option value="all">All Users</option>
+                    <option value="active">Active</option>
+                    <option value="blocked">Blocked</option>
+                </select>
+            </div>
+            <div id="usersList" class="users-list"></div>
+        </section>
+
+        <!-- Orders Section -->
+        <section id="ordersSection" class="section" style="display: none;">
+            <h2>Orders Management</h2>
+            <div class="orders-controls">
+                <div class="orders-filters">
+                    <select id="orderStatusFilter">
+                        <option value="all">All Orders</option>
+                        <option value="pending">Pending Orders</option>
+                        <option value="completed">Completed Orders</option>
+                    </select>
+                    <input type="text" id="orderSearchInput" placeholder="Search orders by customer name...">
+                </div>
+                <div class="orders-stats">
+                    <div class="stat-card">
+                        <h3>Total Orders</h3>
+                        <span id="adminTotalOrders">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Orders</h3>
+                        <span id="adminPendingOrders">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Completed Orders</h3>
+                        <span id="adminCompletedOrders">0</span>
+                    </div>
+                </div>
+            </div>
+            <div id="adminOrdersList" class="orders-list"></div>
+        </section>
+
+        <!-- Search Section -->
+        <section id="searchSection" class="section" style="display: none;">
+            <h2>Search Food Items</h2>
+            <div class="search-container">
+                <input type="text" id="adminSearchInput" placeholder="Search food...">
+                <div id="adminSearchResults" class="food-grid"></div>
+            </div>
+        </section>
+
+        <!-- Food Items Section -->
+        <section id="foodItemsSection" class="section" style="display: none;">
+            <h2>Food Items</h2>
+            <div class="categories">
+                <button onclick="filterAdminCategory('all')" class="active">All</button>
+                <button onclick="filterAdminCategory('fastfood')">Fast Food</button>
+                <button onclick="filterAdminCategory('desert')">Desert</button>
+                <button onclick="filterAdminCategory('drinks')">Drinks</button>
+                <button onclick="filterAdminCategory('indian')">Indian</button>
+                <button onclick="filterAdminCategory('nepali')">Nepali</button>
+            </div>
+            <div id="adminFoodGrid" class="food-grid"></div>
+        </section>
+
+        <!-- Add Food Section -->
+        <section id="addFoodSection" class="section" style="display: none;">
+            <h2>Add New Food Item</h2>
+            <form id="addFoodForm" class="add-food-form">
+                <input type="text" id="foodName" placeholder="Food Name" required>
+                <input type="number" id="foodPrice" placeholder="Price" step="0.01" required>
+                <select id="foodCategory" required>
+                    <option value="">Select Category</option>
+                    <option value="fastfood">Fast Food</option>
+                    <option value="desert">Desert</option>
+                    <option value="drinks">Drinks</option>
+                    <option value="indian">Indian</option>
+                    <option value="nepali">Nepali</option>
+                </select>
+                <input type="url" id="foodImage" placeholder="Image URL" required>
+                <button type="submit">Add Food Item</button>
+            </form>
+        </section>
+    </div>
+
+    <!-- Edit Food Modal -->
+    <div id="editFoodModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Food Item</h2>
+            <form id="editFoodForm" class="edit-food-form">
+                <input type="hidden" id="editFoodId">
+                <input type="text" id="editFoodName" placeholder="Food Name" required>
+                <input type="number" id="editFoodPrice" placeholder="Price" step="0.01" required>
+                <select id="editFoodCategory" required>
+                    <option value="fastfood">Fast Food</option>
+                    <option value="desert">Desert</option>
+                    <option value="drinks">Drinks</option>
+                    <option value="indian">Indian</option>
+                    <option value="nepali">Nepali</option>
+                </select>
+                <input type="url" id="editFoodImage" placeholder="Image URL" required>
+                <button type="submit">Update Food Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Order Modal -->
+    <div id="editOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Order</h2>
+                <span class="close" onclick="closeEditOrderModal()">&times;</span>
+            </div>
+            <form id="editOrderForm" class="order-form">
+                <div class="form-group">
+                    <label for="editOrderName">Customer Name</label>
+                    <input type="text" id="editOrderName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editOrderPhone">Phone</label>
+                    <input type="tel" id="editOrderPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="editOrderAddress">Delivery Address</label>
+                    <textarea id="editOrderAddress" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editOrderStatus">Status</label>
+                    <select id="editOrderStatus" required>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <input type="hidden" id="editOrderId">
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                    <button type="button" class="btn-secondary" onclick="closeEditOrderModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

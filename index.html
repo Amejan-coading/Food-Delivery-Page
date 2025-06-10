@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Ordering System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-container">
+            <h2>Welcome</h2>
+            <div class="auth-tabs">
+                <button onclick="showLogin()" class="active" id="loginTab">Login</button>
+                <button onclick="showSignup()" id="signupTab">Sign Up</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <input type="email" placeholder="Email" id="loginEmail" required>
+                <input type="password" placeholder="Password" id="loginPassword" required>
+                <button type="submit">Login</button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form" style="display: none;">
+                <input type="text" placeholder="Full Name" id="signupName" required>
+                <input type="email" placeholder="Email" id="signupEmail" required>
+                <input type="tel" placeholder="Phone Number" id="signupPhone" required>
+                <input type="password" placeholder="Password" id="signupPassword" required>
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="main-app" style="display: none;">
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <div class="nav-brand">Food Order</div>
+            <div class="nav-links">
+                <a href="#" onclick="showSection('home')" class="active">Home</a>
+                <a href="#" onclick="showSection('search')">Search</a>
+                <a href="#" onclick="showSection('orders')">Orders</a>
+                <a href="#" onclick="showSection('profile')">Profile</a>
+                <button onclick="logout()" class="logout-btn">Logout</button>
+            </div>
+        </nav>
+
+        <!-- Home Section -->
+        <section id="homeSection" class="section">
+            <div class="categories">
+                <button onclick="filterCategory('all')" class="active">All</button>
+                <button onclick="filterCategory('fastfood')">Fast Food</button>
+                <button onclick="filterCategory('desert')">Desert</button>
+                <button onclick="filterCategory('drinks')">Drinks</button>
+                <button onclick="filterCategory('indian')">Indian</button>
+                <button onclick="filterCategory('nepali')">Nepali</button>
+            </div>
+            <div id="foodGrid" class="food-grid"></div>
+        </section>
+
+        <!-- Search Section -->
+        <section id="searchSection" class="section" style="display: none;">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search food...">
+                <div id="searchResults" class="food-grid"></div>
+            </div>
+        </section>
+
+        <!-- Orders Section -->
+        <section id="ordersSection" class="section" style="display: none;">
+            <div class="section-header">
+                <h2>My Orders</h2>
+                <div class="order-stats">
+                    <div class="stat-card">
+                        <span id="totalOrders">0</span>
+                        <h3>Total Orders</h3>
+                    </div>
+                    <div class="stat-card">
+                        <span id="pendingOrders">0</span>
+                        <h3>Pending</h3>
+                    </div>
+                    <div class="stat-card">
+                        <span id="completedOrders">0</span>
+                        <h3>Completed</h3>
+                    </div>
+                </div>
+            </div>
+            <div id="ordersList" class="orders-list"></div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profileSection" class="section" style="display: none;">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img id="profileAvatar" src="" alt="Profile">
+                </div>
+                <div class="profile-info">
+                    <h2 id="profileName"></h2>
+                    <span id="profileStatus" class="profile-status"></span>
+                </div>
+            </div>
+            
+            <div class="profile-tabs">
+                <button id="infoTab" class="tab-btn active" onclick="switchProfileTab('info')">Personal Info</button>
+                <button id="ordersTab" class="tab-btn" onclick="switchProfileTab('orders')">Order History</button>
+                <button id="settingsTab" class="tab-btn" onclick="switchProfileTab('settings')">Settings</button>
+            </div>
+
+            <div id="infoTab-content" class="tab-content">
+                <form id="profileForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="profileName">Name</label>
+                        <input type="text" id="profileName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileEmail">Email</label>
+                        <input type="email" id="profileEmail" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="profilePhone">Phone</label>
+                        <input type="tel" id="profilePhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileAddress">Default Delivery Address</label>
+                        <textarea id="profileAddress"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </form>
+            </div>
+
+            <div id="ordersTab-content" class="tab-content" style="display: none;">
+                <div class="profile-order-stats">
+                    <div class="stat-card">
+                        <span id="profileTotalOrders">0</span>
+                        <h3>Total Orders</h3>
+                    </div>
+                    <div class="stat-card">
+                        <span id="profilePendingOrders">0</span>
+                        <h3>Pending</h3>
+                    </div>
+                    <div class="stat-card">
+                        <span id="profileCompletedOrders">0</span>
+                        <h3>Completed</h3>
+                    </div>
+                </div>
+                <div id="profileOrdersList" class="orders-list"></div>
+            </div>
+
+            <div id="settingsTab-content" class="tab-content" style="display: none;">
+                <div class="settings-section">
+                    <h3>Change Password</h3>
+                    <form id="passwordForm" class="settings-form">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Change Password</button>
+                    </form>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Notifications</h3>
+                    <div class="settings-options">
+                        <div class="toggle-option">
+                            <label for="emailNotifications">
+                                Email Notifications
+                                <p class="option-description">Receive order updates via email</p>
+                            </label>
+                            <label class="switch">
+                                <input type="checkbox" id="emailNotifications">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-option">
+                            <label for="orderUpdates">
+                                Order Updates
+                                <p class="option-description">Get notified about order status changes</p>
+                            </label>
+                            <label class="switch">
+                                <input type="checkbox" id="orderUpdates">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section danger-zone">
+                    <h3>Danger Zone</h3>
+                    <button onclick="deleteAccount()" class="btn-danger">Delete Account</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Order Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Place Order</h2>
+                <span class="close" onclick="closeOrderModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="orderFoodDetails" class="order-preview"></div>
+                <form id="orderForm" class="order-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="orderName">Full Name</label>
+                            <input type="text" id="orderName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderPhone">Phone Number</label>
+                            <input type="tel" id="orderPhone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderEmail">Email</label>
+                        <input type="email" id="orderEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderAddress">Delivery Address</label>
+                        <textarea id="orderAddress" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderNotes">Special Instructions (Optional)</label>
+                        <textarea id="orderNotes" placeholder="Any special requests or delivery instructions..."></textarea>
+                    </div>
+                    <div class="order-summary">
+                        <h3>Order Summary</h3>
+                        <div class="summary-item">
+                            <span>Item Price:</span>
+                            <span id="orderItemPrice">$0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Delivery Fee:</span>
+                            <span id="orderDeliveryFee">$2.00</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>Total:</span>
+                            <span id="orderTotal">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="form-group payment-method">
+                        <label>Payment Method</label>
+                        <div class="payment-options">
+                            <label class="payment-option">
+                                <input type="radio" name="paymentMethod" value="cash" checked>
+                                <span class="payment-icon">💵</span>
+                                Cash on Delivery
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="paymentMethod" value="card">
+                                <span class="payment-icon">💳</span>
+                                Card Payment
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeOrderModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <span class="btn-icon">🛍️</span>
+                            Place Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Success Modal -->
+    <div id="orderSuccessModal" class="modal">
+        <div class="modal-content success-modal">
+            <div class="success-icon">✅</div>
+            <h2>Order Placed Successfully!</h2>
+            <div class="success-details">
+                <p>Your order has been confirmed and is being processed.</p>
+                <div class="order-tracking">
+                    <p>Order ID: <span id="successOrderId"></span></p>
+                    <p>Estimated Delivery: <span id="estimatedDelivery"></span></p>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeSuccessModal()" class="btn-primary">Continue Shopping</button>
+                <button onclick="viewOrder()" class="btn-secondary">View Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
